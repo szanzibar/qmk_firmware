@@ -12,6 +12,7 @@ enum my_layers {
 #define LALT_Q LM(_QWERTY, MOD_LALT)
 #define LWIN_Q LM(_QWERTY, MOD_LGUI)
 #define SHF_CAP MT(MOD_LSFT, KC_CAPS)
+#define DASH_SYM LT(_SYMBOLS, KC_MINS)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -21,7 +22,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,                               KC_F,    KC_G,    KC_C,    KC_R,    KC_L,    KC_SLSH,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     LCTL_Q,  KC_A,    KC_O,    KC_E,    KC_U,    KC_I,                               KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    KC_MINS,
+     LCTL_Q,  KC_A,    KC_O,    KC_E,    KC_U,    KC_I,                               KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    DASH_SYM,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      SHF_CAP, KC_SCLN, KC_Q,    KC_J,    KC_K,    KC_X,    KC_DEL,           MEDIA,   KC_B,    KC_M,    KC_W,    KC_V,    KC_Z,    KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -59,7 +60,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_MEDIA] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     _______, RGB_M_P, RGB_M_B, RGB_M_R, RGB_M_SW, RESET,                             _______, KC_NUM,  KC_PSLS, KC_PAST, KC_PMNS, _______,
+     _______, _______, _______, _______, _______, RESET,                              _______, KC_NUM,  KC_PSLS, KC_PAST, KC_PMNS, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI, _______,                            _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
@@ -71,3 +72,29 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   )
 };
+
+void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    HSV hsv = {0, 0, 0};
+    RGB rgb = {0, 0, 0};
+    hsv.v = rgb_matrix_get_val();
+
+    switch(get_highest_layer(layer_state|default_layer_state)) {
+        case _SYMBOLS:
+            // blue
+            hsv.h = 170;
+            hsv.s = 255;
+            rgb = hsv_to_rgb(hsv);
+            rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
+            break;
+        case _MEDIA:
+            // yellow
+            hsv.h = 43;
+            hsv.s = 255;
+            rgb = hsv_to_rgb(hsv);
+            rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
+            break;
+        default:
+            break;
+    }
+}
+
