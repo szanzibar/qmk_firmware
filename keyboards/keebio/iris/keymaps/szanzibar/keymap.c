@@ -74,27 +74,68 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-    HSV hsv = {0, 0, 0};
-    RGB rgb = {0, 0, 0};
-    hsv.v = rgb_matrix_get_val();
+    uint8_t v = rgb_matrix_get_val();
 
-    switch(get_highest_layer(layer_state|default_layer_state)) {
+    HSV blue_hsv = {170, 255, v};
+    RGB blue = hsv_to_rgb(blue_hsv);
+
+    HSV yellow_hsv = {43, 255, v};
+    RGB yellow = hsv_to_rgb(yellow_hsv);
+
+    uint8_t layer = get_highest_layer(layer_state|default_layer_state);
+
+    switch(layer) {
         case _SYMBOLS:
-            // blue
-            hsv.h = 170;
-            hsv.s = 255;
-            rgb = hsv_to_rgb(hsv);
-            rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
+            rgb_matrix_set_color(0, blue.r, blue.g, blue.b);
             break;
         case _MEDIA:
-            // yellow
-            hsv.h = 43;
-            hsv.s = 255;
-            rgb = hsv_to_rgb(hsv);
-            rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
+            rgb_matrix_set_color(0, yellow.r, yellow.g, yellow.b);
             break;
         default:
             break;
     }
 }
+
+// void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+//     HSV hsv = {0, 0, 0};
+//     RGB rgb = {0, 0, 0};
+//     hsv.v = rgb_matrix_get_val();
+
+//     switch(get_highest_layer(layer_state|default_layer_state)) {
+//         case _SYMBOLS:
+//             // blue
+//             hsv.h = 170;
+//             hsv.s = 255;
+//             rgb = hsv_to_rgb(hsv);
+//             rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
+//             break;
+//         case _MEDIA:
+//             // yellow
+//             hsv.h = 43;
+//             hsv.s = 255;
+//             rgb = hsv_to_rgb(hsv);
+//             rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
+//             break;
+//         default:
+//             break;
+//     }
+// }
+
+// void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+//     uint8_t val = rgb_matrix_get_val();
+
+//     switch(get_highest_layer(layer_state|default_layer_state)) {
+//         case _SYMBOLS:
+//             // blue
+//             rgb_matrix_sethsv_noeeprom(170, 255, val);
+//             break;
+//         case _MEDIA:
+//             // yellow
+//             rgb_matrix_sethsv_noeeprom(43, 255, val);
+//             break;
+//         default:
+//             rgb_matrix_mode_noeeprom(RGB_MATRIX_TYPING_HEATMAP);
+//             break;
+//     }
+// }
 

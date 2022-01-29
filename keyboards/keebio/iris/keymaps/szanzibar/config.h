@@ -45,4 +45,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define ENABLE_RGB_MATRIX_MULTISPLASH // fuck yes crazy town
 #define ENABLE_RGB_MATRIX_SOLID_MULTISPLASH
 
-#define RGBLIGHT_LAYERS
