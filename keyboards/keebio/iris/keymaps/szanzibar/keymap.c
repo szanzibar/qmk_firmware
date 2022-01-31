@@ -74,51 +74,39 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 void rgb_matrix_indicators_user() {
-    uint8_t v = rgb_matrix_get_val();
-
     // Converting hsv to rgb so that current brightness is respected
     // otherwise keyboard crashes from pulling too much power.
     // Some bug with WS2812 I guess? (https://docs.qmk.fm/#/feature_rgb_matrix?id=indicator-examples-1)
-    HSV blue_hsv = {170, 255, v};
-    RGB blue = hsv_to_rgb(blue_hsv);
-
-    HSV yellow_hsv = {43, 255, v};
-    RGB yellow = hsv_to_rgb(yellow_hsv);
-
-    HSV green_hsv = {85, 255, v};
-    RGB green = hsv_to_rgb(green_hsv);
-
-    HSV red_hsv = {0, 255, v};
-    RGB red = hsv_to_rgb(red_hsv);
+    uint8_t v = rgb_matrix_get_val();
+    HSV hsv = {0, 255, v};
+    RGB rgb = {0, 0, 0};
 
     uint8_t layer = get_highest_layer(layer_state|default_layer_state);
 
     if (host_keyboard_led_state().caps_lock) {
-        rgb_matrix_set_color_all(red.r, red.g, red.b);
+        hsv.h = 0; // red
+        rgb = hsv_to_rgb(hsv);
+        rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
     }
     else {
         switch(layer) {
             case _QWERTY:
-                // rgb_matrix_sethsv_noeeprom works across both halves of the keyboard,
-                // but only on supported modes. (not on my favorite mode, heat map)
-                rgb_matrix_sethsv_noeeprom(85, 255, 100);
-
-                // This works only on one half, and the IDs are messed up depending on which half is master.
-                rgb_matrix_set_color_all(green.r, green.g, green.b);
+                hsv.h = 85; // green
+                rgb = hsv_to_rgb(hsv);
+                rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
                 break;
             case _SYMBOLS:
-                rgb_matrix_sethsv_noeeprom(170, 255, 100);
-
-                rgb_matrix_set_color_all(blue.r, blue.g, blue.b);
+                hsv.h = 170; // blue
+                rgb = hsv_to_rgb(hsv);
+                rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
                 break;
             case _MEDIA:
-                rgb_matrix_sethsv_noeeprom(43, 255, 100);
-
-                rgb_matrix_set_color_all(yellow.r, yellow.g, yellow.b);
+                hsv.h = 43; // yellow
+                rgb = hsv_to_rgb(hsv);
+                rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
                 break;
             default:
-                // turn backlight LEDs off
-                rgb_matrix_set_color_all(RGB_OFF);
+                //TODO: do something about the backlights not turning off
                 break;
         }
     }
