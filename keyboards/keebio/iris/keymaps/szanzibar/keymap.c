@@ -83,7 +83,7 @@ void rgb_matrix_indicators_user() {
 
     uint8_t layer = get_highest_layer(layer_state|default_layer_state);
 
-    if (host_keyboard_led_state().caps_lock) {
+    if (host_keyboard_led_state().caps_lock || (get_mods() & MOD_MASK_SHIFT)) {
         hsv.h = 0; // red
         rgb = hsv_to_rgb(hsv);
         rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
