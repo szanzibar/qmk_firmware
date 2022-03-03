@@ -15,6 +15,13 @@ enum td_keycodes {
     TD_ALTQ_DEL // DEL on tap, WIN + QWERTY on hold
 };
 
+enum combo_events {
+  DASH_ARROW,
+  EQUALS_ARROW,
+  COMBO_LENGTH
+};
+uint16_t COMBO_LEN = COMBO_LENGTH;
+
 #define SYMBOLS TT(_SYMBOLS)
 #define MEDIA TT(_MEDIA)
 #define LCTL_Q LM(_QWERTY, MOD_LCTL)
@@ -25,6 +32,22 @@ enum td_keycodes {
 #define Z_MEDIA LT(_MEDIA, KC_Z)
 #define SCLN_MED LT(_MEDIA, KC_SCLN)
 #define ALTQ_DEL TD(TD_ALTQ_DEL)
+
+// Combos
+const uint16_t PROGMEM dash_arrow_combo[] = {DASH_SYM, KC_DOT, COMBO_END};
+const uint16_t PROGMEM equals_arrow_combo[] = {DASH_SYM, KC_DOT, KC_COMMA, COMBO_END};
+combo_t key_combos[] = {
+    [DASH_ARROW] = COMBO_ACTION(dash_arrow_combo),
+    [EQUALS_ARROW] = COMBO_ACTION(equals_arrow_combo),
+};
+void process_combo_event(uint16_t combo_index, bool pressed) {
+    switch(combo_index) {
+        case DASH_ARROW:
+            if (pressed) { SEND_STRING("->"); } break;
+        case EQUALS_ARROW:
+            if (pressed) { SEND_STRING("=>"); } break;
+    }
+}
 
 // Tap dance states
 typedef enum {
