@@ -1,9 +1,18 @@
 #include QMK_KEYBOARD_H
+
+// Reminder to run `qmk generate-compilation-database` if squiggles come back
+// More context here: https://ptb.discord.com/channels/440868230475677696/440868230475677698/945364866800156723
+
 enum my_layers {
     _DVORAK,
     _QWERTY,
     _SYMBOLS,
     _MEDIA
+};
+
+// Tap Dance keycodes
+enum td_keycodes {
+    TD_WINQ_DEL // DEL on tap, WIN + QWERTY on hold
 };
 
 #define SYMBOLS TT(_SYMBOLS)
@@ -13,6 +22,33 @@ enum my_layers {
 #define LWIN_Q LM(_QWERTY, MOD_LGUI)
 #define SHF_CAP MT(MOD_LSFT, KC_CAPS)
 #define DASH_SYM LT(_SYMBOLS, KC_MINS)
+#define Z_MEDIA LT(_MEDIA, KC_Z)
+#define SCLN_MED LT(_MEDIA, KC_SCLN)
+#define WINQ_DEL TD(TD_WINQ_DEL)
+
+// Tap dance states
+typedef enum {
+    TD_NONE,
+    TD_UNKNOWN,
+    TD_SINGLE_TAP,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_TAP,
+    TD_DOUBLE_SINGLE_TAP, // a third key is tapped after the double tap, "interrupting" the double tap
+    TD_DOUBLE_HOLD,
+    TD_TRIPLE_TAP,
+    TD_TRIPLE_SINGLE_TAP,
+    TD_TRIPLE_HOLD
+} td_state_t;
+
+// Global tap dance state
+static td_state_t td_state;
+
+// Function to determine the current tapdance state
+td_state_t cur_dance(qk_tap_dance_state_t *state);
+
+// `finished` and `reset` functions for TD_WINQ_DEL
+void winqdel_finished(qk_tap_dance_state_t *state, void *user_data);
+void winqdel_reset(qk_tap_dance_state_t *state, void *user_data);
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -24,9 +60,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      SHF_CAP, KC_A,    KC_O,    KC_E,    KC_U,    KC_I,                               KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    DASH_SYM,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     LCTL_Q,  KC_SCLN, KC_Q,    KC_J,    KC_K,    KC_X,    LWIN_Q,           MEDIA,   KC_B,    KC_M,    KC_W,    KC_V,    KC_Z,    KC_RSFT,
+     LCTL_Q,  SCLN_MED, KC_Q,   KC_J,    KC_K,    KC_X,    LWIN_Q,           MEDIA,   KC_B,    KC_M,    KC_W,    KC_V,    Z_MEDIA, KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    LALT_Q,  KC_DEL,  KC_BSPC,                   KC_SPC,  KC_ENT,  SYMBOLS
+                                    LALT_Q,  WINQ_DEL, KC_BSPC,                  KC_SPC,  KC_ENT,  SYMBOLS
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
@@ -60,17 +96,73 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_MEDIA] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     _______, _______, _______, _______, _______, RESET,                              _______, KC_NUM,  KC_PSLS, KC_PAST, KC_PMNS, _______,
+     _______, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI, RESET,                              RESET,   KC_NUM,  KC_PSLS, KC_PAST, KC_PMNS, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, RGB_SPI, _______,                            _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
+     _______, _______, _______, _______, RGB_MOD, RGB_TOG,                            _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     RGB_MOD, KC_MPRV, KC_MNXT, KC_VOLU, _______, _______,                            _______, KC_KP_4, KC_KP_5, KC_KP_6, _______, _______,
+     _______, _______, _______, KC_MPRV, KC_MNXT, _______,                            _______, KC_KP_4, KC_KP_5, KC_KP_6, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_MUTE, KC_MSTP, KC_MPLY, KC_VOLD, _______, _______, _______,          _______, KC_KP_0, KC_KP_1, KC_KP_2, KC_KP_3, KC_PDOT, _______,
+     _______, _______, KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY, _______,          _______, _______, KC_KP_1, KC_KP_2, KC_KP_3, KC_PDOT, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    _______, _______, _______,                   _______, _______, _______
+                                    _______, _______, _______,                   _______, _______, KC_KP_0
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   )
+};
+
+// Determine the tapdance state to return
+td_state_t cur_dance(qk_tap_dance_state_t *state) {
+    if (state->count == 1) {
+        if (!state->pressed) return TD_SINGLE_TAP;
+        else return TD_SINGLE_HOLD;
+    } else if (state->count == 2) {
+        // a third key is tapped after the double tap, "interrupting" the double tap
+        if (state->interrupted) return TD_DOUBLE_SINGLE_TAP;
+        else if (state->pressed) return TD_DOUBLE_HOLD;
+        else return TD_DOUBLE_TAP;
+    } else if (state->count == 3) {
+        if (state->interrupted) return TD_TRIPLE_SINGLE_TAP;
+        else if(state->pressed) return TD_TRIPLE_HOLD;
+        else return TD_TRIPLE_TAP;
+    }
+    else return TD_UNKNOWN; // Any number higher than the maximum state value you return above
+}
+
+void winqdel_finished(qk_tap_dance_state_t *state, void *user_data) {
+    td_state = cur_dance(state);
+    switch (td_state) {
+        case TD_SINGLE_TAP:
+            tap_code(KC_DEL);
+            break;
+        case TD_SINGLE_HOLD:
+            register_mods(MOD_BIT(KC_LGUI));
+            layer_on(_QWERTY);
+            break;
+        case TD_DOUBLE_HOLD:
+            tap_code16(LCTL(KC_DEL));
+            break;
+        default:
+            for (uint8_t i = 0; i < state->count; i++)
+            {
+                tap_code(KC_DEL);
+            }
+            break;
+    }
+}
+
+void winqdel_reset(qk_tap_dance_state_t *state, void *user_data) {
+    switch (td_state) {
+        case TD_SINGLE_HOLD:
+            layer_off(_QWERTY);
+            unregister_mods(MOD_BIT(KC_LGUI));
+            break;
+        default:
+            break;
+    }
+}
+
+// Define `ACTION_TAP_DANCE_FN_ADVANCED()` for each tapdance keycode, passing in `finished` and `reset` functions
+qk_tap_dance_action_t tap_dance_actions[] = {
+    [TD_WINQ_DEL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, winqdel_finished, winqdel_reset)
 };
 
 void rgb_matrix_indicators_user() {
