@@ -12,7 +12,7 @@ enum my_layers {
 
 // Tap Dance keycodes
 enum td_keycodes {
-    TD_WINQ_DEL // DEL on tap, WIN + QWERTY on hold
+    TD_ALTQ_DEL // DEL on tap, WIN + QWERTY on hold
 };
 
 #define SYMBOLS TT(_SYMBOLS)
@@ -24,7 +24,7 @@ enum td_keycodes {
 #define DASH_SYM LT(_SYMBOLS, KC_MINS)
 #define Z_MEDIA LT(_MEDIA, KC_Z)
 #define SCLN_MED LT(_MEDIA, KC_SCLN)
-#define WINQ_DEL TD(TD_WINQ_DEL)
+#define ALTQ_DEL TD(TD_ALTQ_DEL)
 
 // Tap dance states
 typedef enum {
@@ -46,9 +46,9 @@ static td_state_t td_state;
 // Function to determine the current tapdance state
 td_state_t cur_dance(qk_tap_dance_state_t *state);
 
-// `finished` and `reset` functions for TD_WINQ_DEL
-void winqdel_finished(qk_tap_dance_state_t *state, void *user_data);
-void winqdel_reset(qk_tap_dance_state_t *state, void *user_data);
+// `finished` and `reset` functions for TD_ALTQ_DEL
+void altqdel_finished(qk_tap_dance_state_t *state, void *user_data);
+void altqdel_reset(qk_tap_dance_state_t *state, void *user_data);
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -60,9 +60,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      SHF_CAP, KC_A,    KC_O,    KC_E,    KC_U,    KC_I,                               KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    DASH_SYM,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     LCTL_Q,  SCLN_MED, KC_Q,   KC_J,    KC_K,    KC_X,    LWIN_Q,           MEDIA,   KC_B,    KC_M,    KC_W,    KC_V,    Z_MEDIA, KC_RSFT,
+     LCTL_Q,  SCLN_MED, KC_Q,   KC_J,    KC_K,    KC_X,    _______,          MEDIA,   KC_B,    KC_M,    KC_W,    KC_V,    Z_MEDIA, KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    LALT_Q,  WINQ_DEL, KC_BSPC,                  KC_SPC,  KC_ENT,  SYMBOLS
+                                    LWIN_Q,  ALTQ_DEL, KC_BSPC,                  KC_SPC,  KC_ENT,  SYMBOLS
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
@@ -127,14 +127,14 @@ td_state_t cur_dance(qk_tap_dance_state_t *state) {
     else return TD_UNKNOWN; // Any number higher than the maximum state value you return above
 }
 
-void winqdel_finished(qk_tap_dance_state_t *state, void *user_data) {
+void altqdel_finished(qk_tap_dance_state_t *state, void *user_data) {
     td_state = cur_dance(state);
     switch (td_state) {
         case TD_SINGLE_TAP:
             tap_code(KC_DEL);
             break;
         case TD_SINGLE_HOLD:
-            register_mods(MOD_BIT(KC_LGUI));
+            register_mods(MOD_BIT(KC_LALT));
             layer_on(_QWERTY);
             break;
         case TD_DOUBLE_HOLD:
@@ -149,11 +149,11 @@ void winqdel_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void winqdel_reset(qk_tap_dance_state_t *state, void *user_data) {
+void altqdel_reset(qk_tap_dance_state_t *state, void *user_data) {
     switch (td_state) {
         case TD_SINGLE_HOLD:
             layer_off(_QWERTY);
-            unregister_mods(MOD_BIT(KC_LGUI));
+            unregister_mods(MOD_BIT(KC_LALT));
             break;
         default:
             break;
@@ -162,7 +162,7 @@ void winqdel_reset(qk_tap_dance_state_t *state, void *user_data) {
 
 // Define `ACTION_TAP_DANCE_FN_ADVANCED()` for each tapdance keycode, passing in `finished` and `reset` functions
 qk_tap_dance_action_t tap_dance_actions[] = {
-    [TD_WINQ_DEL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, winqdel_finished, winqdel_reset)
+    [TD_ALTQ_DEL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, altqdel_finished, altqdel_reset)
 };
 
 void rgb_matrix_indicators_user() {
