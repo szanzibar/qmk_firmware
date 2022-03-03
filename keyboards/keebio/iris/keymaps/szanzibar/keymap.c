@@ -165,41 +165,31 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [TD_ALTQ_DEL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, altqdel_finished, altqdel_reset)
 };
 
-void rgb_matrix_indicators_user() {
+void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // Converting hsv to rgb so that current brightness is respected
     // otherwise keyboard crashes from pulling too much power.
     // Some bug with WS2812 I guess? (https://docs.qmk.fm/#/feature_rgb_matrix?id=indicator-examples-1)
     uint8_t v = rgb_matrix_get_val();
     HSV hsv = {0, 255, v};
-    RGB rgb = {0, 0, 0};
 
     uint8_t layer = get_highest_layer(layer_state|default_layer_state);
 
     if (host_keyboard_led_state().caps_lock || (get_mods() & MOD_MASK_SHIFT)) {
         hsv.h = 0; // red
-        rgb = hsv_to_rgb(hsv);
-        rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
     }
     else {
         switch(layer) {
-            case _QWERTY:
-                hsv.h = 85; // green
-                rgb = hsv_to_rgb(hsv);
-                rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
-                break;
-            case _SYMBOLS:
-                hsv.h = 170; // blue
-                rgb = hsv_to_rgb(hsv);
-                rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
-                break;
-            case _MEDIA:
-                hsv.h = 43; // yellow
-                rgb = hsv_to_rgb(hsv);
-                rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
-                break;
-            default:
-                //TODO: do something about the backlights not turning off
-                break;
+            case _QWERTY: hsv.h = 85; break; // green
+            case _SYMBOLS: hsv.h = 170; break; // blue
+            case _MEDIA: hsv.h = 43; break; // yellow
+            default: hsv.v = 0; break;
+        }
+    }
+
+    RGB rgb = hsv_to_rgb(hsv);
+    for (uint8_t i = led_min; i <= led_max; i++) {
+        if (HAS_FLAGS(g_led_config.flags[i], 0x02)) {
+            rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
         }
     }
 }
