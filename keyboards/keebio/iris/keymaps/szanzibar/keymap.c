@@ -27,6 +27,7 @@ uint16_t COMBO_LEN = COMBO_LENGTH;
 #define LCTL_Q LM(_QWERTY, MOD_LCTL)
 #define LALT_Q LM(_QWERTY, MOD_LALT)
 #define LWIN_Q LM(_QWERTY, MOD_LGUI)
+#define HYPR_Q LM(_QWERTY, MOD_HYPR)
 #define SHF_CAP MT(MOD_LSFT, KC_CAPS)
 #define DASH_SYM LT(_SYMBOLS, KC_MINS)
 #define Z_MEDIA LT(_MEDIA, KC_Z)
@@ -83,9 +84,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      SHF_CAP, KC_A,    KC_O,    KC_E,    KC_U,    KC_I,                               KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    DASH_SYM,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     LCTL_Q,  SCLN_MED, KC_Q,   KC_J,    KC_K,    KC_X,    _______,          MEDIA,   KC_B,    KC_M,    KC_W,    KC_V,    Z_MEDIA, KC_RSFT,
+     LCTL_Q,  SCLN_MED, KC_Q,   KC_J,    KC_K,    KC_X,    MEDIA,            SYMBOLS, KC_B,    KC_M,    KC_W,    KC_V,    Z_MEDIA, KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    LWIN_Q,  ALTQ_DEL, KC_BSPC,                  KC_SPC,  KC_ENT,  SYMBOLS
+                                    LWIN_Q,  ALTQ_DEL, KC_BSPC,                  KC_SPC,  KC_ENT,  HYPR_Q
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
@@ -95,7 +96,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, _______,
+     KC_LSFT, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    _______,          _______, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -109,7 +110,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_GRV,  KC_EQL,  KC_LCBR, KC_RCBR, _______,                            _______, _______, KC_UP,   _______, _______, KC_F12,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, KC_TILD, KC_PLUS, KC_LPRN, KC_RPRN, _______,                            KC_PSCR, KC_LEFT, KC_DOWN, KC_RGHT, KC_PGUP, _______,
+     SHF_CAP, KC_TILD, KC_PLUS, KC_LPRN, KC_RPRN, _______,                            KC_PSCR, KC_LEFT, KC_DOWN, KC_RGHT, KC_PGUP, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_LCTL, _______, _______, KC_LBRC, KC_RBRC, _______, _______,          _______, KC_APP,  KC_HOME, KC_END,  _______, KC_PGDN, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
