@@ -222,9 +222,13 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     }
 
     RGB rgb = hsv_to_rgb(hsv);
-    for (uint8_t i = led_min; i <= led_max; i++) {
-        if (HAS_FLAGS(g_led_config.flags[i], 0x02)) {
-            rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+    if (hsv.v == 0) {
+        for (uint8_t i = led_min; i <= led_max; i++) {
+            if (HAS_FLAGS(g_led_config.flags[i], 0x02)) {
+                rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+            }
         }
+    } else {
+        rgb_matrix_set_color_all(rgb.r, rgb.g, rgb.b);
     }
 }
