@@ -18,7 +18,7 @@ uint16_t COMBO_LEN = COMBO_LENGTH;
 #define LCTL_Q LM(_QWERTY, MOD_LCTL)
 #define LALT_Q LM(_QWERTY, MOD_LALT)
 #define LWIN_Q LM(_QWERTY, MOD_LGUI)
-#define HYPR_Q LM(_QWERTY, MOD_HYPR)
+#define LCAG_Q LM(_QWERTY, MOD_LCTL | MOD_LALT | MOD_LGUI)
 #define SHF_CAP MT(MOD_LSFT, KC_CAPS)
 #define DASH_SYM LT(_SYMBOLS, KC_MINS)
 #define Z_MEDIA LT(_MEDIA, KC_Z)
@@ -84,7 +84,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      LCTL_Q,  SCLN_MED, KC_Q,   KC_J,    KC_K,    KC_X,    MEDIA,            SYMBOLS, KC_B,    KC_M,    KC_W,    KC_V,    Z_MEDIA, KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    LWIN_Q,  ALTQ_DEL, KC_BSPC,                  KC_SPC,  KC_ENT,  HYPR_Q
+                                    LWIN_Q,  ALTQ_DEL, KC_BSPC,                  KC_SPC,  KC_ENT,  LCAG_Q
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
