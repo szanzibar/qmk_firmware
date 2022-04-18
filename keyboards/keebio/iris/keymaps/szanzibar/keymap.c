@@ -3,23 +3,14 @@
 // Reminder to run `qmk generate-compilation-database` if squiggles come back
 // More context here: https://ptb.discord.com/channels/440868230475677696/440868230475677698/945364866800156723
 
-enum my_layers {
-    _DVORAK,
-    _QWERTY,
-    _SYMBOLS,
-    _MEDIA
-};
+enum my_layers { _DVORAK, _QWERTY, _SYMBOLS, _MEDIA };
 
 // Tap Dance keycodes
 enum td_keycodes {
     TD_ALTQ_DEL // DEL on tap, WIN + QWERTY on hold
 };
 
-enum combo_events {
-  DASH_ARROW,
-  EQUALS_ARROW,
-  COMBO_LENGTH
-};
+enum combo_events { DASH_ARROW, EQUALS_ARROW, COMBO_LENGTH };
 uint16_t COMBO_LEN = COMBO_LENGTH;
 
 #define SYMBOLS TT(_SYMBOLS)
@@ -35,18 +26,24 @@ uint16_t COMBO_LEN = COMBO_LENGTH;
 #define ALTQ_DEL TD(TD_ALTQ_DEL)
 
 // Combos
-const uint16_t PROGMEM dash_arrow_combo[] = {DASH_SYM, KC_DOT, COMBO_END};
+const uint16_t PROGMEM dash_arrow_combo[]   = {DASH_SYM, KC_DOT, COMBO_END};
 const uint16_t PROGMEM equals_arrow_combo[] = {DASH_SYM, KC_DOT, KC_COMMA, COMBO_END};
-combo_t key_combos[] = {
-    [DASH_ARROW] = COMBO_ACTION(dash_arrow_combo),
+combo_t                key_combos[]         = {
+    [DASH_ARROW]   = COMBO_ACTION(dash_arrow_combo),
     [EQUALS_ARROW] = COMBO_ACTION(equals_arrow_combo),
 };
 void process_combo_event(uint16_t combo_index, bool pressed) {
-    switch(combo_index) {
+    switch (combo_index) {
         case DASH_ARROW:
-            if (pressed) { SEND_STRING("->"); } break;
+            if (pressed) {
+                SEND_STRING("->");
+            }
+            break;
         case EQUALS_ARROW:
-            if (pressed) { SEND_STRING("=>"); } break;
+            if (pressed) {
+                SEND_STRING("=>");
+            }
+            break;
     }
 }
 
@@ -74,6 +71,7 @@ td_state_t cur_dance(qk_tap_dance_state_t *state);
 void altqdel_finished(qk_tap_dance_state_t *state, void *user_data);
 void altqdel_reset(qk_tap_dance_state_t *state, void *user_data);
 
+// clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_DVORAK] = LAYOUT(
@@ -132,23 +130,32 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   )
 };
+// clang-format on
 
 // Determine the tapdance state to return
 td_state_t cur_dance(qk_tap_dance_state_t *state) {
     if (state->count == 1) {
-        if (!state->pressed) return TD_SINGLE_TAP;
-        else return TD_SINGLE_HOLD;
+        if (!state->pressed)
+            return TD_SINGLE_TAP;
+        else
+            return TD_SINGLE_HOLD;
     } else if (state->count == 2) {
         // a third key is tapped after the double tap, "interrupting" the double tap
-        if (state->interrupted) return TD_DOUBLE_SINGLE_TAP;
-        else if (state->pressed) return TD_DOUBLE_HOLD;
-        else return TD_DOUBLE_TAP;
+        if (state->interrupted)
+            return TD_DOUBLE_SINGLE_TAP;
+        else if (state->pressed)
+            return TD_DOUBLE_HOLD;
+        else
+            return TD_DOUBLE_TAP;
     } else if (state->count == 3) {
-        if (state->interrupted) return TD_TRIPLE_SINGLE_TAP;
-        else if(state->pressed) return TD_TRIPLE_HOLD;
-        else return TD_TRIPLE_TAP;
-    }
-    else return TD_UNKNOWN; // Any number higher than the maximum state value you return above
+        if (state->interrupted)
+            return TD_TRIPLE_SINGLE_TAP;
+        else if (state->pressed)
+            return TD_TRIPLE_HOLD;
+        else
+            return TD_TRIPLE_TAP;
+    } else
+        return TD_UNKNOWN; // Any number higher than the maximum state value you return above
 }
 
 void altqdel_finished(qk_tap_dance_state_t *state, void *user_data) {
@@ -165,8 +172,7 @@ void altqdel_finished(qk_tap_dance_state_t *state, void *user_data) {
             tap_code16(LCTL(KC_DEL));
             break;
         default:
-            for (uint8_t i = 0; i < state->count; i++)
-            {
+            for (uint8_t i = 0; i < state->count; i++) {
                 tap_code(KC_DEL);
             }
             break;
@@ -185,28 +191,33 @@ void altqdel_reset(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 // Define `ACTION_TAP_DANCE_FN_ADVANCED()` for each tapdance keycode, passing in `finished` and `reset` functions
-qk_tap_dance_action_t tap_dance_actions[] = {
-    [TD_ALTQ_DEL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, altqdel_finished, altqdel_reset)
-};
+qk_tap_dance_action_t tap_dance_actions[] = {[TD_ALTQ_DEL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, altqdel_finished, altqdel_reset)};
 
 void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // Converting hsv to rgb so that current brightness is respected
     // otherwise keyboard crashes from pulling too much power.
     // Some bug with WS2812 I guess? (https://docs.qmk.fm/#/feature_rgb_matrix?id=indicator-examples-1)
-    uint8_t v = rgb_matrix_get_val();
-    HSV hsv = {0, 255, v};
+    uint8_t v   = rgb_matrix_get_val();
+    HSV     hsv = {0, 255, v};
 
-    uint8_t layer = get_highest_layer(layer_state|default_layer_state);
+    uint8_t layer = get_highest_layer(layer_state | default_layer_state);
 
     if (host_keyboard_led_state().caps_lock || (get_mods() & MOD_MASK_SHIFT)) {
         hsv.h = 0; // red
-    }
-    else {
-        switch(layer) {
-            case _QWERTY: hsv.h = 85; break; // green
-            case _SYMBOLS: hsv.h = 170; break; // blue
-            case _MEDIA: hsv.h = 43; break; // yellow
-            default: hsv.v = 0; break;
+    } else {
+        switch (layer) {
+            case _QWERTY:
+                hsv.h = 85;
+                break; // green
+            case _SYMBOLS:
+                hsv.h = 170;
+                break; // blue
+            case _MEDIA:
+                hsv.h = 43;
+                break; // yellow
+            default:
+                hsv.v = 0;
+                break;
         }
     }
 
