@@ -10,7 +10,7 @@ enum td_keycodes {
     TD_ALTQ_DEL // DEL on tap, WIN + QWERTY on hold
 };
 
-enum combo_events { DASH_ARROW, EQUALS_ARROW, COMBO_LENGTH };
+enum combo_events { DASH_ARROW, EQUALS_ARROW, SHIFTS_CAPS, COMBO_LENGTH };
 uint16_t COMBO_LEN = COMBO_LENGTH;
 
 #define SYMBOLS TT(_SYMBOLS)
@@ -19,7 +19,6 @@ uint16_t COMBO_LEN = COMBO_LENGTH;
 #define LALT_Q LM(_QWERTY, MOD_LALT)
 #define LWIN_Q LM(_QWERTY, MOD_LGUI)
 #define LCAG_Q LM(_QWERTY, MOD_LCTL | MOD_LALT | MOD_LGUI)
-#define SHF_CAP MT(MOD_LSFT, KC_CAPS)
 #define DASH_SYM LT(_SYMBOLS, KC_MINS)
 #define Z_MEDIA LT(_MEDIA, KC_Z)
 #define SCLN_MED LT(_MEDIA, KC_SCLN)
@@ -28,9 +27,11 @@ uint16_t COMBO_LEN = COMBO_LENGTH;
 // Combos
 const uint16_t PROGMEM dash_arrow_combo[]   = {DASH_SYM, KC_DOT, COMBO_END};
 const uint16_t PROGMEM equals_arrow_combo[] = {DASH_SYM, KC_DOT, KC_COMMA, COMBO_END};
+const uint16_t PROGMEM shifts_caps_combo[]  = {KC_LSFT, KC_RSFT, COMBO_END};
 combo_t                key_combos[]         = {
     [DASH_ARROW]   = COMBO_ACTION(dash_arrow_combo),
     [EQUALS_ARROW] = COMBO_ACTION(equals_arrow_combo),
+    [SHIFTS_CAPS]  = COMBO_ACTION(shifts_caps_combo),
 };
 void process_combo_event(uint16_t combo_index, bool pressed) {
     switch (combo_index) {
@@ -42,6 +43,11 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
         case EQUALS_ARROW:
             if (pressed) {
                 SEND_STRING("=>");
+            }
+            break;
+        case SHIFTS_CAPS:
+            if (pressed) {
+                tap_code(KC_CAPS);
             }
             break;
     }
@@ -80,7 +86,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,                               KC_F,    KC_G,    KC_C,    KC_R,    KC_L,    KC_SLSH,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     SHF_CAP, KC_A,    KC_O,    KC_E,    KC_U,    KC_I,                               KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    DASH_SYM,
+     KC_LSFT, KC_A,    KC_O,    KC_E,    KC_U,    KC_I,                               KC_D,    KC_H,    KC_T,    KC_N,    KC_S,    DASH_SYM,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      LCTL_Q,  SCLN_MED, KC_Q,   KC_J,    KC_K,    KC_X,    MEDIA,            SYMBOLS, KC_B,    KC_M,    KC_W,    KC_V,    Z_MEDIA, KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -94,7 +100,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_LSFT, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, _______,
+     _______, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    _______,          _______, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -108,7 +114,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_GRV,  KC_EQL,  KC_LCBR, KC_RCBR, _______,                            _______, _______, KC_UP,   _______, _______, KC_F12,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     SHF_CAP, KC_TILD, KC_PLUS, KC_LPRN, KC_RPRN, _______,                            KC_PSCR, KC_LEFT, KC_DOWN, KC_RGHT, KC_PGUP, _______,
+     _______, KC_TILD, KC_PLUS, KC_LPRN, KC_RPRN, _______,                            KC_PSCR, KC_LEFT, KC_DOWN, KC_RGHT, KC_PGUP, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_LCTL, _______, _______, KC_LBRC, KC_RBRC, _______, _______,          _______, KC_APP,  KC_HOME, KC_END,  _______, KC_PGDN, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
