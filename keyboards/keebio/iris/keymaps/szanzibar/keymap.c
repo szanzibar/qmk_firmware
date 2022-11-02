@@ -10,7 +10,7 @@ enum td_keycodes {
     TD_ALTQ_DEL // DEL on tap, WIN + QWERTY on hold
 };
 
-enum combo_events { DASH_ARROW, EQUALS_ARROW, SHIFTS_CAPS, COMBO_LENGTH };
+enum combo_events { DASH_ARROW, EQUALS_ARROW, LEFT_DASH_ARROW, LEFT_EQUALS_ARROW, SHIFTS_CAPS, COMBO_LENGTH };
 uint16_t COMBO_LEN = COMBO_LENGTH;
 
 #define SYMBOLS TT(_SYMBOLS)
@@ -25,13 +25,14 @@ uint16_t COMBO_LEN = COMBO_LENGTH;
 #define ALTQ_DEL TD(TD_ALTQ_DEL)
 
 // Combos
-const uint16_t PROGMEM dash_arrow_combo[]   = {DASH_SYM, KC_DOT, COMBO_END};
-const uint16_t PROGMEM equals_arrow_combo[] = {DASH_SYM, KC_DOT, KC_COMMA, COMBO_END};
-const uint16_t PROGMEM shifts_caps_combo[]  = {KC_LSFT, KC_RSFT, COMBO_END};
-combo_t                key_combos[]         = {
-    [DASH_ARROW]   = COMBO_ACTION(dash_arrow_combo),
-    [EQUALS_ARROW] = COMBO_ACTION(equals_arrow_combo),
-    [SHIFTS_CAPS]  = COMBO_ACTION(shifts_caps_combo),
+const uint16_t PROGMEM dash_arrow_combo[]        = {DASH_SYM, KC_DOT, COMBO_END};
+const uint16_t PROGMEM equals_arrow_combo[]      = {DASH_SYM, KC_DOT, KC_COMMA, COMBO_END};
+const uint16_t PROGMEM left_dash_arrow_combo[]   = {DASH_SYM, KC_COMMA, COMBO_END};
+const uint16_t PROGMEM left_equals_arrow_combo[] = {DASH_SYM, KC_QUOT, KC_COMMA, COMBO_END};
+const uint16_t PROGMEM shifts_caps_combo[]       = {KC_LSFT, KC_RSFT, COMBO_END};
+
+combo_t key_combos[] = {
+    [DASH_ARROW] = COMBO_ACTION(dash_arrow_combo), [EQUALS_ARROW] = COMBO_ACTION(equals_arrow_combo), [LEFT_DASH_ARROW] = COMBO_ACTION(left_dash_arrow_combo), [LEFT_EQUALS_ARROW] = COMBO_ACTION(left_equals_arrow_combo), [SHIFTS_CAPS] = COMBO_ACTION(shifts_caps_combo),
 };
 void process_combo_event(uint16_t combo_index, bool pressed) {
     switch (combo_index) {
@@ -43,6 +44,16 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
         case EQUALS_ARROW:
             if (pressed) {
                 SEND_STRING("=>");
+            }
+            break;
+        case LEFT_DASH_ARROW:
+            if (pressed) {
+                SEND_STRING("<-");
+            }
+            break;
+        case LEFT_EQUALS_ARROW:
+            if (pressed) {
+                SEND_STRING("<=");
             }
             break;
         case SHIFTS_CAPS:
@@ -112,11 +123,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
      _______, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                              KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, KC_GRV,  KC_EQL,  KC_LCBR, KC_RCBR, _______,                            _______, _______, KC_UP,   _______, _______, KC_F12,
+     _______, KC_GRV,  KC_EQL,  KC_LCBR, KC_RCBR, _______,                            KC_QUOT, KC_DQUO, KC_UP,   KC_LT,   KC_GT,   KC_F12,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_TILD, KC_PLUS, KC_LPRN, KC_RPRN, _______,                            KC_PSCR, KC_LEFT, KC_DOWN, KC_RGHT, KC_PGUP, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_LCTL, _______, _______, KC_LBRC, KC_RBRC, _______, _______,          _______, KC_APP,  KC_HOME, KC_END,  _______, KC_PGDN, _______,
+     KC_LCTL, KC_COLN, KC_SCLN, KC_LBRC, KC_RBRC, _______, _______,          _______, KC_APP,  KC_HOME, KC_END,  _______, KC_PGDN, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                     _______, _______, _______,                    _______, _______, _______
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
@@ -130,7 +141,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, _______, KC_MPRV, KC_MNXT, _______,                            _______, KC_KP_4, KC_KP_5, KC_KP_6, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, _______, KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY, _______,          _______, _______, KC_KP_1, KC_KP_2, KC_KP_3, KC_PDOT, _______,
+     _______, _______, KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY, _______,          _______, KC_PDOT, KC_KP_1, KC_KP_2, KC_KP_3, _______, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                     _______, _______, _______,                   _______, _______, KC_KP_0
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
