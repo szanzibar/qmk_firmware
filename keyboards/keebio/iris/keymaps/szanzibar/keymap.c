@@ -3,7 +3,7 @@
 // Reminder to run `qmk generate-compilation-database` if squiggles come back
 // More context here: https://ptb.discord.com/channels/440868230475677696/440868230475677698/945364866800156723
 
-enum my_layers { _DVORAK, _QWERTY, _SYMBOLS, _MEDIA };
+enum my_layers { _DVORAK, _QWERTY, _SYMBOLS, _MEDIA, _GAMING };
 
 // Tap Dance keycodes
 enum td_keycodes {
@@ -15,6 +15,7 @@ uint16_t COMBO_LEN = COMBO_LENGTH;
 
 #define SYMBOLS TT(_SYMBOLS)
 #define MEDIA TT(_MEDIA)
+#define GAMING TG(_GAMING)
 #define LCTL_Q LM(_QWERTY, MOD_LCTL)
 #define LALT_Q LM(_QWERTY, MOD_LALT)
 #define LWIN_Q LM(_QWERTY, MOD_LGUI)
@@ -143,9 +144,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, KC_MUTE, KC_VOLD, KC_VOLU, KC_MPLY, _______,          _______, KC_PDOT, KC_KP_1, KC_KP_2, KC_KP_3, _______, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    _______, _______, _______,                   _______, _______, KC_KP_0
+                                    GAMING,  _______, _______,                   _______, _______, KC_KP_0
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
-  )
+  ),
+
+  [_GAMING] = LAYOUT(
+  //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
+     KC_ESC,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC,
+  //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
+     _______, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    _______,
+  //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
+     _______, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, _______,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    _______,          _______, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, _______,
+  //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
+                                    GAMING,  _______, KC_SPC,                    _______, _______, _______
+                                // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
+  ),
 };
 // clang-format on
 
@@ -232,6 +247,9 @@ void rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
             case _MEDIA:
                 hsv.h = 43;
                 break; // yellow
+            case _GAMING:
+                hsv.h = 128;
+                break; // cyan
             default:
                 hsv.v = 0;
                 break;
